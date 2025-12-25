@@ -73,13 +73,12 @@ router.post(
 
 /* ============================================
    📥 Mail Folders
-   ⚠️ Fixed: Added /home prefix for frontend compatibility
 ============================================ */
-router.get("/home/inbox", verifyToken, asyncHandler(getInbox));
-router.get("/home/sent", verifyToken, asyncHandler(getSent));
-router.get("/home/deleted", verifyToken, asyncHandler(getDeleted));
-router.get("/home/saved", verifyToken, asyncHandler(getSaved));
-router.get("/home/drafts", verifyToken, asyncHandler(getDrafts));
+router.get("/inbox", verifyToken, asyncHandler(getInbox));
+router.get("/sent", verifyToken, asyncHandler(getSent));
+router.get("/deleted", verifyToken, asyncHandler(getDeleted));
+router.get("/saved", verifyToken, asyncHandler(getSaved));
+router.get("/drafts", verifyToken, asyncHandler(getDrafts));
 
 /* ============================================
    🛠 Mail Controls
