@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
         try {
           // 1) REFRESH ACCESS TOKEN
           const res = await axios.post(
-            "http://localhost:5000/api/auth/refresh",
+            "https://xmail-96ao.onrender.com/api/auth/refresh",
             { refreshToken: parsed.refreshToken }
           );
 
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
           // 2) LOAD FULL USER DATA (name, email, DP etc)
           const userRes = await axios.get(
-            "http://localhost:5000/api/user/me",
+            "https://xmail-96ao.onrender.com/api/user/me",
             {
               headers: { Authorization: `Bearer ${accessToken}` },
             }
