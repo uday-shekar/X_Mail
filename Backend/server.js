@@ -26,9 +26,9 @@ import userRoutes from "./routes/user.js";
 import draftRoutes from "./routes/draftRoutes.js";
 
 /* =====================
-   🧠 DEBUG (TEMP – REMOVE LATER)
+   🧠 DEBUG (TEMP)
 ===================== */
-console.log("🔑 GAMINI_API_KEY loaded:", !!process.env.OPENAI_API_KEY);
+console.log("🔑 OPENAI_API_KEY loaded:", !!process.env.OPENAI_API_KEY);
 console.log("🔑 ASSEMBLYAI_API_KEY loaded:", !!process.env.ASSEMBLYAI_API_KEY);
 
 /* =====================
@@ -51,8 +51,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   : [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://2gzlmz21-5173.inc1.devtunnels.ms",
-      "https://x-mail-inqh.onrender.com"
+      "https://x-mail-inqh.onrender.com",
     ];
 
 /* =====================
@@ -60,18 +59,13 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 ===================== */
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
-      if (allowedOrigins.some((o) => origin.startsWith(o))) {
+      if (allowedOrigins.some((o) => origin.startsWith(o)))
         return callback(null, true);
-      }
-
-      console.warn("❌ CORS blocked origin:", origin);
-      return callback(new Error("CORS policy: Origin not allowed"));
+      return callback(new Error("CORS not allowed"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
@@ -84,7 +78,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =====================
-   🛣 Routes
+   🛣 API Routes
 ===================== */
 app.use("/api/auth", authRoutes);
 app.use("/api/mail", mailRoutes);
@@ -93,26 +87,20 @@ app.use("/api/bot", botRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/drafts", draftRoutes);
 
-app.get("/", (req, res) => {
-  res.status(200).send("✅ Xmail backend running with OpenAI + AssemblyAI");
-});
-
 /* =====================
    🔌 SOCKET.IO
 ===================== */
 const io = new SocketIOServer(httpServer, {
   cors: {
     origin: allowedOrigins,
-    methods: ["GET", "POST"],
     credentials: true,
   },
-  transports: ["websocket", "polling"],
 });
 
 const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-  console.log(`🔌 Socket connected: ${socket.id}`);
+  console.log("🔌 Socket connected:", socket.id);
 
   socket.on("registerUser", (userId) => {
     if (!userId) return;
@@ -126,24 +114,33 @@ io.on("connection", (socket) => {
 
     onlineUsers.set(userId, socket.id);
     socket.join(userId);
-
-    console.log(`✅ User registered: ${userId} -> ${socket.id}`);
   });
 
   socket.on("disconnect", () => {
     for (const [uid, sid] of onlineUsers.entries()) {
       if (sid === socket.id) {
         onlineUsers.delete(uid);
-        console.log(`❌ User ${uid} disconnected`);
         break;
       }
     }
   });
-
-  socket.on("error", (err) => {
-    console.warn("⚠️ Socket error:", err?.message || err);
-  });
 });
+
+/* =====================
+   🌐 SERVE FRONTEND (🔥 MOST IMPORTANT 🔥)
+===================== */
+const frontendPath = path.join(__dirname, "Frontend", "dist");
+
+// Serve static assets
+app.use(express.static(frontendPath));
+
+// SPA refresh fix
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// favicon silent fix
+app.get("/favicon.ico", (req, res) => res.status(204));
 
 /* =====================
    ▶️ Start Server
@@ -154,24 +151,13 @@ const startServer = async () => {
   try {
     await connectDB();
     httpServer.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
-      console.log(`🌐 Allowed Origins: ${allowedOrigins.join(", ")}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Error starting server:", err);
+    console.error("❌ Server start failed:", err);
     process.exit(1);
   }
 };
-
-/* =====================
-   🧯 Global Error Handling
-===================== */
-process.on("unhandledRejection", (err) => {
-  console.error("❌ Unhandled Rejection:", err);
-});
-process.on("uncaughtException", (err) => {
-  console.error("❌ Uncaught Exception:", err);
-});
 
 startServer();
 
