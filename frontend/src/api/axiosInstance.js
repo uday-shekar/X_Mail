@@ -6,18 +6,18 @@ import axios from "axios";
 =========================================================== */
 let API_BASE_URL = "https://xmail-96ao.onrender.com/"; // default
 
-if (typeof window !== "undefined") {
-  if (import.meta.env?.VITE_API_URL) {
-    // ✅ Use Vite .env variable if available
-    API_BASE_URL = import.meta.env.VITE_API_URL;
-  } else if (window.location.hostname.includes("devtunnels.ms")) {
-    // ✅ Automatically detect devtunnel URLs
-    API_BASE_URL = `https://${window.location.hostname}`;
-  } else if (window.location.hostname !== "localhost") {
-    // ✅ Deployed domain auto-detect
-    API_BASE_URL = window.location.origin;
-  }
-}
+// if (typeof window !== "undefined") {
+//   if (import.meta.env?.VITE_API_URL) {
+//     // ✅ Use Vite .env variable if available
+//     API_BASE_URL = import.meta.env.VITE_API_URL;
+//   } else if (window.location.hostname.includes("devtunnels.ms")) {
+//     // ✅ Automatically detect devtunnel URLs
+//     API_BASE_URL = `https://${window.location.hostname}`;
+//   } else if (window.location.hostname !== "localhost") {
+//     // ✅ Deployed domain auto-detect
+//     API_BASE_URL = window.location.origin;
+//   }
+// }
 
 /* ===========================================================
    ⚙️ Axios Instance
