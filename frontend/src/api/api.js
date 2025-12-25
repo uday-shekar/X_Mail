@@ -1,6 +1,6 @@
 // src/api/api.js
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://xmail-96ao.onrender.com/api";
 
 // =========================
 // Helper: Request Wrapper

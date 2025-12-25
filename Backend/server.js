@@ -52,6 +52,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
       "http://localhost:3000",
       "http://localhost:5173",
       "https://2gzlmz21-5173.inc1.devtunnels.ms",
+      "https://x-mail-inqh.onrender.com"
     ];
 
 /* =====================
