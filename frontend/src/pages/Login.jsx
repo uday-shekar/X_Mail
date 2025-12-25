@@ -45,6 +45,8 @@ export default function Login() {
         refreshToken,
       };
 
+      console.log("Logged in user:", storedUser);
+
       // Save session
       localStorage.setItem("xmailUser", JSON.stringify(storedUser));
       setUser(storedUser);
