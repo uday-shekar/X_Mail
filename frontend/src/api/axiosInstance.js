@@ -4,7 +4,7 @@ import axios from "axios";
    🌍 Dynamic API Base URL Setup
    - Works for localhost, devtunnels, and deployed environments
 =========================================================== */
-let API_BASE_URL = "http://localhost:5000"; // default
+let API_BASE_URL = "https://xmail-96ao.onrender.com/"; // default
 
 if (typeof window !== "undefined") {
   if (import.meta.env?.VITE_API_URL) {
