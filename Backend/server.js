@@ -26,6 +26,12 @@ import userRoutes from "./routes/user.js";
 import draftRoutes from "./routes/draftRoutes.js";
 
 /* =====================
+   🧠 DEBUG (TEMP)
+===================== */
+console.log("🔑 OPENAI_API_KEY loaded:", !!process.env.OPENAI_API_KEY);
+console.log("🔑 ASSEMBLYAI_API_KEY loaded:", !!process.env.ASSEMBLYAI_API_KEY);
+
+/* =====================
    🧭 ES Module dirname fix
 ===================== */
 const __filename = fileURLToPath(import.meta.url);
@@ -72,7 +78,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =====================
-   🛣 API Routes (🔥 MUST BE BEFORE FRONTEND)
+   🛣 API Routes
 ===================== */
 app.use("/api/auth", authRoutes);
 app.use("/api/mail", mailRoutes);
@@ -121,25 +127,13 @@ io.on("connection", (socket) => {
 });
 
 /* =====================
-    🌐 SERVE FRONTEND (SPA FIX)
+   🌐 SERVE FRONTEND (🔥 MOST IMPORTANT 🔥)
 ===================== */
-const frontendPath = path.join(__dirname, "Frontend", "dist");
+// Serve frontend build
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// 1. Check if the directory exists (for debugging logs on Render)
-import fs from 'fs';
-if (!fs.existsSync(frontendPath)) {
-    console.warn(`⚠️ Warning: Frontend path not found at ${frontendPath}`);
-}
-app.use(express.static(frontendPath));
 app.get("*", (req, res) => {
-    const indexPath = path.join(frontendPath, "index.html");
-    
-    // Check if index.html exists before sending
-    if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath);
-    } else {
-        res.status(404).send("Frontend build not found. Did you run 'npm run build'?");
-    }
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
 /* =====================
