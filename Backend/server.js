@@ -26,12 +26,6 @@ import userRoutes from "./routes/user.js";
 import draftRoutes from "./routes/draftRoutes.js";
 
 /* =====================
-   🧠 DEBUG (TEMP)
-===================== */
-console.log("🔑 OPENAI_API_KEY loaded:", !!process.env.OPENAI_API_KEY);
-console.log("🔑 ASSEMBLYAI_API_KEY loaded:", !!process.env.ASSEMBLYAI_API_KEY);
-
-/* =====================
    🧭 ES Module dirname fix
 ===================== */
 const __filename = fileURLToPath(import.meta.url);
@@ -78,7 +72,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =====================
-   🛣 API Routes
+   🛣 API Routes (🔥 MUST BE BEFORE FRONTEND)
 ===================== */
 app.use("/api/auth", authRoutes);
 app.use("/api/mail", mailRoutes);
@@ -127,20 +121,20 @@ io.on("connection", (socket) => {
 });
 
 /* =====================
-   🌐 SERVE FRONTEND (🔥 MOST IMPORTANT 🔥)
+   🌐 SERVE FRONTEND (SPA FIX)
 ===================== */
 const frontendPath = path.join(__dirname, "Frontend", "dist");
 
-// Serve static assets
+// Static assets
 app.use(express.static(frontendPath));
 
-// SPA refresh fix
+// favicon silent fix
+app.get("/favicon.ico", (req, res) => res.sendStatus(204));
+
+// 🔥 SPA REFRESH FIX (LAST ROUTE)
 app.get("*", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
-
-// favicon silent fix
-app.get("/favicon.ico", (req, res) => res.status(204));
 
 /* =====================
    ▶️ Start Server
