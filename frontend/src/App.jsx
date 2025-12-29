@@ -23,9 +23,21 @@ import Saved from "./components/Saved";
 
 function LoadingScreen() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-      <h1 className="text-3xl font-bold animate-pulse">Xmail</h1>
-      <p className="text-gray-400 mt-2">Checking session...</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black">
+      <div className="flex items-end gap-1 h-8 mb-6">
+        <div className="w-1.5 bg-white animate-[bounce_1s_infinite_0ms]"></div>
+        <div className="w-1.5 bg-white animate-[bounce_1s_infinite_100ms]"></div>
+        <div className="w-1.5 bg-white animate-[bounce_1s_infinite_200ms]"></div>
+        <div className="w-1.5 bg-white animate-[bounce_1s_infinite_300ms]"></div>
+      </div>
+      
+      <h1 className="text-3xl font-bold text-white tracking-tighter italic">
+        XMAIL<span className="text-gray-500">.</span>
+      </h1>
+      
+      <div className="mt-4 w-48 h-1 bg-gray-900 rounded-full overflow-hidden">
+        <div className="w-full h-full bg-white -translate-x-full animate-[loading_1.5s_infinite_ease-in-out]"></div>
+      </div>
     </div>
   );
 }

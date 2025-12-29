@@ -121,19 +121,25 @@ io.on("connection", (socket) => {
 });
 
 /* =====================
-   🌐 SERVE FRONTEND (SPA FIX)
+    🌐 SERVE FRONTEND (SPA FIX)
 ===================== */
 const frontendPath = path.join(__dirname, "Frontend", "dist");
 
-// Static assets
+// 1. Check if the directory exists (for debugging logs on Render)
+import fs from 'fs';
+if (!fs.existsSync(frontendPath)) {
+    console.warn(`⚠️ Warning: Frontend path not found at ${frontendPath}`);
+}
 app.use(express.static(frontendPath));
-
-// favicon silent fix
-app.get("/favicon.ico", (req, res) => res.sendStatus(204));
-
-// 🔥 SPA REFRESH FIX (LAST ROUTE)
 app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
+    const indexPath = path.join(frontendPath, "index.html");
+    
+    // Check if index.html exists before sending
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(404).send("Frontend build not found. Did you run 'npm run build'?");
+    }
 });
 
 /* =====================
