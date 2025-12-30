@@ -26,12 +26,6 @@ import userRoutes from "./routes/user.js";
 import draftRoutes from "./routes/draftRoutes.js";
 
 /* =====================
-   🧠 DEBUG (TEMP)
-===================== */
-console.log("🔑 OPENAI_API_KEY loaded:", !!process.env.OPENAI_API_KEY);
-console.log("🔑 ASSEMBLYAI_API_KEY loaded:", !!process.env.ASSEMBLYAI_API_KEY);
-
-/* =====================
    🧭 ES Module dirname fix
 ===================== */
 const __filename = fileURLToPath(import.meta.url);
@@ -44,15 +38,13 @@ const app = express();
 const httpServer = createServer(app);
 
 /* =====================
-   🌐 Allowed Frontend Origins
+   🌐 Allowed Origins
 ===================== */
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-  : [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://x-mail-inqh.onrender.com",
-    ];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://x-mail-inqh.onrender.com",
+];
 
 /* =====================
    🧩 Middlewares
@@ -63,7 +55,7 @@ app.use(
       if (!origin) return callback(null, true);
       if (allowedOrigins.some((o) => origin.startsWith(o)))
         return callback(null, true);
-      return callback(new Error("CORS not allowed"));
+      return callback(new Error("❌ CORS not allowed"));
     },
     credentials: true,
   })
@@ -78,7 +70,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =====================
-   🛣 API Routes
+   🛣 API Routes (🔥 ALWAYS BEFORE SPA FALLBACK 🔥)
 ===================== */
 app.use("/api/auth", authRoutes);
 app.use("/api/mail", mailRoutes);
@@ -127,13 +119,14 @@ io.on("connection", (socket) => {
 });
 
 /* =====================
-   🌐 SERVE FRONTEND (🔥 MOST IMPORTANT 🔥)
+   🌐 SERVE FRONTEND (🔥 CRITICAL FIX 🔥)
 ===================== */
-// Serve frontend build
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+const frontendPath = path.join(__dirname, "../frontend/dist");
+
+app.use(express.static(frontendPath));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
 /* =====================
