@@ -5,7 +5,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
 
-  // 🔥 IMPORTANT: makes assets relative
-  // fixes refresh + Render + Express serving
-  base: "./",
+  // 🔥 Required for SPA routing on Render / Express
+  base: "/",
+
+  // 🔥 Build output goes directly into Backend
+  build: {
+    outDir: "../Backend/public",
+    emptyOutDir: true,
+  },
 });
