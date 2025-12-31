@@ -123,16 +123,41 @@ io.on("connection", (socket) => {
 ===================== */
 const frontendPath = path.join(__dirname, "../frontend/dist");
 
-app.use(express.static(frontendPath));
-
-// SPA fallback - serve index.html for all non-API routes
-app.get("*", (req, res, next) => {
+// SPA fallback middleware - serves index.html for non-API, non-static-file routes
+// This MUST come BEFORE express.static to catch SPA routes
+app.use((req, res, next) => {
   // Skip API routes
   if (req.path.startsWith("/api")) {
     return next();
   }
-  res.sendFile(path.join(frontendPath, "index.html"));
+  
+  // Skip uploads routes
+  if (req.path.startsWith("/uploads")) {
+    return next();
+  }
+  
+  // Check if request is for a static file (has file extension like .js, .css, .png, etc.)
+  const pathWithoutQuery = req.path.split('?')[0];
+  const hasExtension = /\.\w+$/.test(pathWithoutQuery);
+  
+  // If it's a static file request, let express.static handle it
+  if (hasExtension) {
+    return next();
+  }
+  
+  // For all other routes (SPA routes like /home/inbox), serve index.html
+  const indexPath = path.join(frontendPath, "index.html");
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error("Error serving index.html:", err);
+      return next(err);
+    }
+  });
 });
+
+// Serve static assets (JS, CSS, images, etc.) from dist folder
+// This runs AFTER the SPA fallback, so static files are still served correctly
+app.use(express.static(frontendPath));
 
 /* =====================
    ▶️ Start Server
